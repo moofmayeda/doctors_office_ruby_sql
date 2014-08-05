@@ -1,5 +1,6 @@
 class Doctor
-  attr_accessor :name, :specialty_id, :insurance_id, :id
+  attr_accessor :name, :specialty_id, :insurance_id
+  attr_reader :id
 
   def initialize doctor_info
     @name = doctor_info[:name]
@@ -23,6 +24,10 @@ class Doctor
 
   def ==(other_doctor)
     self.name == other_doctor.name && self.specialty_id == other_doctor.specialty_id && self.insurance_id == other_doctor.insurance_id
+  end
+
+  def patient
+
 
   end
 end
