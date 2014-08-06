@@ -90,4 +90,38 @@ describe "Appointment" do
       expect(Appointment.find_by_doctor_id(id)).to eq [test_appointment1, test_appointment2]
     end
   end
+
+  describe ".patient_bill" do
+    it "returns the total amount billed to a patient" do
+      test_patient = Patient.new({:name => "Moof", :birthday => "1950-12-01 00:00:00", :doctor_id => 1, :insurance_id => 3})
+      test_patient.save
+      patient_id = test_patient.id
+      test_appointment1 = Appointment.new({:patient_id => patient_id, :doctor_id => 1, :date => "2014-08-01", :cost => 72.05})
+      test_appointment1.save
+      test_appointment2 = Appointment.new({:patient_id => patient_id, :doctor_id => 1, :date => "2014-08-20", :cost => 100.05})
+      test_appointment2.save
+      expect(Appointment.patient_bill(patient_id)).to eq 172.10
+    end
+  end
+
+  describe ".doctor_bill" do
+    it "returns the total amount billed by a doctor in a given date range" do
+      test_doctor = Doctor.new({:name => "Eisenberg", :specialty_id => 3, :insurance_id => 2})
+      test_doctor.save
+      id = test_doctor.id
+      test_doctor2 = Doctor.new({:name => "MKN", :specialty_id => 3, :insurance_id => 1})
+      test_doctor2.save
+      id2 = test_doctor2.id
+      test_appointment1 = Appointment.new({:patient_id => 1, :doctor_id => id, :date => "2014-08-01", :cost => 72.05})
+      test_appointment1.save
+      test_appointment2 = Appointment.new({:patient_id => 1, :doctor_id => id, :date => "2014-08-10", :cost => 100.05})
+      test_appointment2.save
+      test_appointment3 = Appointment.new({:patient_id => 1, :doctor_id => id, :date => "2014-08-20", :cost => 50.00})
+      test_appointment3.save
+      test_appointment4 = Appointment.new({:patient_id => 1, :doctor_id => id2, :date => "2014-08-05", :cost => 1000.00})
+      test_appointment4.save
+      expect(Appointment.doctor_bill(id, "2014-07-30", "2014-08-15")).to eq 172.10
+      expect(Appointment.doctor_bill(id, "2014-08-05", "2014-08-25")).to eq 150.05
+    end
+  end
 end

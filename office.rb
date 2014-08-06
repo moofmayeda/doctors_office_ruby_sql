@@ -19,7 +19,7 @@ def main_menu
   puts "2 - Patients"
   puts "3 - Add a specialty"
   puts "4 - Add an insurance company"
-  puts "5 - Appointments"
+  puts "5 - Appointments & Billing"
   puts "6 - Exit"
   puts "Enter option number"
   case gets.chomp.to_i
@@ -293,6 +293,7 @@ def appointments_menu
   puts "2) View/edit a patient's appointments"
   puts "3) View/edit a doctor's appointments"
   puts "4) View billing for a date range"
+  puts "5) View a patient's total bill"
   case gets.chomp.to_i
   when 1
     patient = search_patient
@@ -303,9 +304,15 @@ def appointments_menu
     edit_date
     edit_cost
   when 3
-
+    view_appointments_doctor
+    edit_date
+    edit_cost
   when 4
-
+    doctor_billing
+  when 5
+    patient = search_patient
+    view_patient(patient)
+    patient_bill(patient)
   end
   main_menu
 end
@@ -313,6 +320,15 @@ end
 def view_appointments_patient
   puts "Enter patient name"
   Appointment.find(gets.chomp).each do |appointment|
+    puts appointment.id.to_s + ") Date: " + appointment.date
+    puts "Cost: " + appointment.cost.to_s + "\n"
+  end
+end
+
+def view_appointments_doctor
+  view_doctors
+  puts "Enter doctor ID number"
+  Appointment.find_by_doctor_id(gets.chomp.to_i).each do |appointment|
     puts appointment.id.to_s + ") Date: " + appointment.date
     puts "Cost: " + appointment.cost.to_s + "\n"
   end
@@ -338,5 +354,22 @@ def edit_cost
     appointment.edit_cost(gets.chomp.to_f)
     puts "Cost changed!"
   end
+end
+
+def patient_bill(patient)
+  puts "*"*88
+  puts "Total costs incurred: $" + Appointment.patient_bill(patient.id).to_s
+  puts "*"*88
+end
+
+def doctor_billing
+  view_doctors
+  puts "Enter doctor ID number"
+  id = gets.chomp.to_i
+  puts "Enter beginning search date (YYYY-MM-DD)"
+  date1 = gets.chomp
+  puts "Enter end of search period (YYYY-MM-DD)"
+  date2 = gets.chomp
+  puts "Total billed: $" + Appointment.doctor_bill(id, date1, date2).to_s
 end
 welcome

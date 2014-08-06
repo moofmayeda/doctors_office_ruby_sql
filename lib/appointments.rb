@@ -23,7 +23,6 @@ class Appointment
     appointments = []
     results = DB.exec("SELECT * FROM patients INNER JOIN appointments ON patients.id=appointments.patient_id WHERE name LIKE '#{name}%';")
     results.each do |result|
-      p result['cost']
       appointments << Appointment.new({:id => result['id'].to_i, :patient_id => result['patient_id'].to_i, :doctor_id => result['doctor_id'].to_i, :date => result['date'], :cost => result['cost'].to_f})
     end
     appointments
@@ -32,6 +31,23 @@ class Appointment
   def self.find_by_id(id)
     result = DB.exec("SELECT * FROM appointments WHERE id = #{id};").first
     Appointment.new({:id => result['id'].to_i, :patient_id => result['patient_id'].to_i, :doctor_id => result['doctor_id'].to_i, :date => result['date'], :cost => result['cost'].to_f})
+  end
+
+  def self.find_by_doctor_id(doctor_id)
+    appointments = []
+    results = DB.exec("SELECT * FROM appointments WHERE doctor_id = #{doctor_id};")
+    results.each do |result|
+      appointments << Appointment.new({:id => result['id'].to_i, :patient_id => result['patient_id'].to_i, :doctor_id => result['doctor_id'].to_i, :date => result['date'], :cost => result['cost'].to_f})
+    end
+    appointments
+  end
+
+  def self.patient_bill(patient_id)
+    DB.exec("SELECT SUM (cost) FROM appointments WHERE patient_id = #{patient_id};").first['sum'].to_f
+  end
+
+  def self.doctor_bill(doctor_id, date1, date2)
+    DB.exec("SELECT SUM (cost) FROM appointments WHERE date BETWEEN '#{date1}' AND '#{date2}' AND doctor_id = #{doctor_id};").first['sum'].to_f
   end
 
   def save
