@@ -3,6 +3,7 @@ require './lib/doctors'
 require './lib/patients'
 require './lib/insurance'
 require './lib/specialities'
+require './lib/appointments'
 
 DB = PG.connect({:dbname => 'office'})
 
@@ -18,7 +19,8 @@ def main_menu
   puts "2 - Patients"
   puts "3 - Add a specialty"
   puts "4 - Add an insurance company"
-  puts "5 - Exit"
+  puts "5 - Appointments"
+  puts "6 - Exit"
   puts "Enter option number"
   case gets.chomp.to_i
   when 1
@@ -30,7 +32,9 @@ def main_menu
   when 4
     add_insurance
   when 5
-    Exit
+    appointments_menu
+  when 6
+    exit
   else
     puts "Enter a valid option"
   end
@@ -226,6 +230,7 @@ def patients_menu
   when "S"
     patient = search_patient
     view_patient(patient)
+    add_appointment(patient)
   else
     puts "try again"
   end
@@ -267,6 +272,71 @@ def view_patient(patient)
   puts " Birthday: " + patient.birthday[0..-10]
   puts " Doctor ID: " + patient.doctor_id.to_s
   puts " Insurance ID: " + patient.insurance_id.to_s + "\n"
+  patient
 end
 
+def add_appointment(patient)
+  puts "Enter 'y' to add a new appointment for this patient"
+  if gets.chomp == 'y'
+    puts "Enter the date of the appointment (YYYY-MM-DD)"
+    date = gets.chomp
+    puts "Enter the cost, if known"
+    cost = gets.chomp.to_f
+    new_appointment = Appointment.new({:patient_id => patient.id, :doctor_id => patient.doctor_id, :date => date, :cost => cost})
+    new_appointment.save
+    puts "New appointment added!"
+  end
+end
+
+def appointments_menu
+  puts "1) Make new appointment"
+  puts "2) View/edit a patient's appointments"
+  puts "3) View/edit a doctor's appointments"
+  puts "4) View billing for a date range"
+  case gets.chomp.to_i
+  when 1
+    patient = search_patient
+    view_patient(patient)
+    add_appointment(patient)
+  when 2
+    view_appointments_patient
+    edit_date
+    edit_cost
+  when 3
+
+  when 4
+
+  end
+  main_menu
+end
+
+def view_appointments_patient
+  puts "Enter patient name"
+  Appointment.find(gets.chomp).each do |appointment|
+    puts appointment.id.to_s + ") Date: " + appointment.date
+    puts "Cost: " + appointment.cost.to_s + "\n"
+  end
+end
+
+def edit_date
+  puts "Enter 'y' to change the date of an appointment"
+  if gets.chomp == 'y'
+    puts "Enter the appointment number"
+    appointment = Appointment.find_by_id(gets.chomp.to_i)
+    puts "Enter the new date (YYYY-MM-DD)"
+    appointment.edit_date(gets.chomp)
+    puts "Date changed!"
+  end
+end
+
+def edit_cost
+  puts "Enter 'y' to change the cost of an appointment"
+  if gets.chomp == 'y'
+    puts "Enter the appointment number"
+    appointment = Appointment.find_by_id(gets.chomp.to_i)
+    puts "Enter the new cost"
+    appointment.edit_cost(gets.chomp.to_f)
+    puts "Cost changed!"
+  end
+end
 welcome
