@@ -4,13 +4,14 @@ class Specialty
 
   def initialize(type)
     @type = type[:type]
+    @id = type[:id]
   end
 
   def self.all
     specialty = []
     results = DB.exec("SELECT * FROM specialty;")
     results.each do |result|
-      specialty << Specialty.new({:type => result['type']})
+      specialty << Specialty.new({:id => result['id'], :type => result['type']})
     end
     specialty
   end

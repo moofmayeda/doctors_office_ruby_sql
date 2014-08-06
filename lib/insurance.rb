@@ -4,13 +4,14 @@ class Insurance
 
   def initialize(name)
     @name = name[:name]
+    @id = name[:id]
   end
 
   def self.all
     insurances = []
     results = DB.exec("SELECT * FROM insurance;")
     results.each do |result|
-      insurances << Insurance.new({:name => result['name']})
+      insurances << Insurance.new({:id => result['id'], :name => result['name']})
     end
     insurances
   end
