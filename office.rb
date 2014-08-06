@@ -244,9 +244,11 @@ def add_patient
   view_doctors
   puts "Enter the ID of the patient's doctor"
   doctor = gets.chomp.to_i
-  Patient.new({:name => name, :birthday => birthday, :doctor_id => doctor, :insurance_id => insurance}).save
-  p Doctor.find_doctor(doctor)
+  new_patient = Patient.new({:name => name, :birthday => birthday, :doctor_id => doctor, :insurance_id => insurance})
+  new_patient.save
+  Doctor.find_doctor(doctor).update_count
   puts "Patient added!"
+  puts "Note: doctor does not accept patient's insurance." if !new_patient.insurance_check
 end
 
 def remove_patient(patient_id)

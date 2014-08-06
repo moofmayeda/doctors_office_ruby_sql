@@ -34,4 +34,16 @@ describe 'Patient' do
       expect(test_patient1.==(test_patient2)).to be true
     end
   end
+
+  describe "insurance_check" do
+    it "tests whether there's a match between patient and doctor's insurance" do
+      test_doctor1 = Doctor.new({:name => "Eisenberg", :specialty_id => 3, :insurance_id => 1})
+      test_doctor1.save
+      id1 = test_doctor1.id
+      test_patient1 = Patient.new({:name => "Austin", :birthday => "1900-01-01 00:00:00", :doctor_id => id1, :insurance_id => 1})
+      test_patient2 = Patient.new({:name => "Austin", :birthday => "1900-01-01 00:00:00", :doctor_id => id1, :insurance_id => 2})
+      expect(test_patient1.insurance_check).to eq true
+      expect(test_patient2.insurance_check).to eq false
+    end
+  end
 end

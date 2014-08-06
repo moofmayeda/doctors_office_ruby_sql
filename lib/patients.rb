@@ -36,4 +36,8 @@ class Patient
     result = DB.exec("SELECT * FROM patients WHERE name = '#{name}'").first
     patient = Patient.new({:id => result['id'], :name => result['name'], :birthday => result['birthday'], :doctor_id => result['doctor_id'].to_i, :insurance_id => result['insurance_id'].to_i})
   end
+
+  def insurance_check
+    @insurance_id == Doctor.find_doctor(@doctor_id).insurance_id
+  end
 end
