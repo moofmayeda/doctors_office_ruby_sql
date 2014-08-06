@@ -111,7 +111,7 @@ def view_doctors
   puts "All doctors:"
   doctors = Doctor.all
   doctors.each do |doctor|
-    puts doctor.id.to_s + ") " + doctor.name
+    puts doctor.id.to_s + ") " + doctor.name + " (Patients: " + doctor.patient_count.to_s + ")"
   end
 end
 
